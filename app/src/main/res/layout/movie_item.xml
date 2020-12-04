@@ -9,9 +9,10 @@
     <ImageView
         android:id="@+id/img_item"
         android:layout_width="0dp"
+        android:layout_marginStart="5dp"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        android:src="@drawable/movie"
+        android:src="@drawable/placeholderitem_bg"
         app:layout_constraintDimensionRatio="w,3:4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

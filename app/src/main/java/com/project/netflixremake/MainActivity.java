@@ -8,13 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.project.netflixremake.model.Category;
+import com.project.netflixremake.model.Movie;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CancellationException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             List<Movie> listMovie = new ArrayList<>();
             for (int j = 0; j < 30; j++) {
                 Movie movie = new Movie();
-                movie.setCoverUrl(j);
+                movie.setCoverUrl(R.drawable.placeholderitem_bg);
                 listMovie.add(movie);
             }
 

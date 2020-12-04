@@ -1,4 +1,4 @@
-package com.project.netflixremake;
+package com.project.netflixremake.model;
 
 public class Movie {
 
