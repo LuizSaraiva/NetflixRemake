@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager lm_main;
     private MainAdapter mainAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
