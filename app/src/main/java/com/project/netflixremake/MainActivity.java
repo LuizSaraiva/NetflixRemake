@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.project.netflixremake.model.Category;
 import com.project.netflixremake.model.Movie;
+import com.project.netflixremake.util.JsonDownloadTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             List<Movie> listMovie = new ArrayList<>();
             for (int j = 0; j < 30; j++) {
                 Movie movie = new Movie();
-                movie.setCoverUrl(R.drawable.placeholderitem_bg);
+                //movie.setCoverUrl(R.drawable.placeholderitem_bg);
                 listMovie.add(movie);
             }
 
@@ -52,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         rv_main.setLayoutManager(lm_main);
         rv_main.setAdapter(mainAdapter);
 
+
+        //Recuperar dados JSON
+        new JsonDownloadTask(this).execute("https://tiagoaguiar.co/api/netflix/home");
 
     }
 
@@ -116,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
             Movie movie = movies.get(position);
-            holder.img_movie.setImageResource(movie.getCoverUrl());
+            //holder.img_movie.setImageResource(movie.getCoverUrl());
         }
 
         @Override
