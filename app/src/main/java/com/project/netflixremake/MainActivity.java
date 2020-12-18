@@ -13,12 +13,13 @@ import android.widget.TextView;
 
 import com.project.netflixremake.model.Category;
 import com.project.netflixremake.model.Movie;
-import com.project.netflixremake.util.JsonDownloadTask;
+import com.project.netflixremake.util.CategoryTask;
+import com.project.netflixremake.util.MovieDownloadTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CategoryTask.CategoryLoader {
 
     private RecyclerView rv_main;
     private RecyclerView.LayoutManager lm_main;
@@ -30,21 +31,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         List<Category> categories = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Category category = new Category();
-            category.setName("cat: "+i);
-            categories.add(category);
-
-            List<Movie> listMovie = new ArrayList<>();
-            for (int j = 0; j < 30; j++) {
-                Movie movie = new Movie();
-                //movie.setCoverUrl(R.drawable.placeholderitem_bg);
-                listMovie.add(movie);
-            }
-
-            category.setMovie(listMovie);
-            categories.add(category);
-        }
 
         rv_main = findViewById(R.id.rv_main);
         lm_main = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -55,14 +41,22 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Recuperar dados JSON
-        new JsonDownloadTask(this).execute("https://tiagoaguiar.co/api/netflix/home");
+        CategoryTask categoryTask = new CategoryTask(this);
+        categoryTask.setCategoryLoader(this);
+        categoryTask.execute("https://tiagoaguiar.co/api/netflix/home");
 
     }
 
+    @Override
+    public void onResult(List<Category> categories) {
+        mainAdapter.setCategory(categories);
+        mainAdapter.notifyDataSetChanged();
+    }
 
-    private class MainAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
 
-        List<Category> ListCategories;
+    private class MainAdapter extends RecyclerView.Adapter<CategoryViewHolder>{
+
+        private List<Category> ListCategories;
 
         MainAdapter(List<Category> category) {
             this.ListCategories = category;
@@ -86,6 +80,12 @@ public class MainActivity extends AppCompatActivity {
         public int getItemCount() {
             return ListCategories.size();
         }
+
+        public void setCategory(List<Category> categories) {
+//            this.ListCategories.clear();
+//            this.ListCategories.addAll(categories);
+            this.ListCategories = categories;
+        }
     }
 
     private static class CategoryViewHolder extends RecyclerView.ViewHolder {
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class MovieAdapter extends RecyclerView.Adapter<MovieViewHolder> {
 
-        List<Movie> movies;
+        private final List<Movie> movies;
 
         MovieAdapter(List<Movie> movie) {
             this.movies = movie;
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
             Movie movie = movies.get(position);
-            //holder.img_movie.setImageResource(movie.getCoverUrl());
+            new MovieDownloadTask(holder.img_movie).execute(movie.getCoverUrl());
         }
 
         @Override
@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
             return movies.size();
         }
     }
-
 
     private static class MovieViewHolder extends RecyclerView.ViewHolder {
 

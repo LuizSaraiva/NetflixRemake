@@ -25,12 +25,17 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
+public class CategoryTask extends AsyncTask<String, Void, List<Category>> {
 
     private final WeakReference<Context> context;
     private ProgressDialog dialog;
+    private CategoryLoader categoryLoader;
 
-    public JsonDownloadTask(Context context) {
+    public void setCategoryLoader(CategoryLoader categoryLoader) {
+        this.categoryLoader = categoryLoader;
+    }
+
+    public CategoryTask(Context context) {
         this.context = new WeakReference<>(context);
     }
 
@@ -91,6 +96,10 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
         super.onPostExecute(categories);
 
         dialog.dismiss();
+
+
+        if(categoryLoader != null)
+            categoryLoader.onResult(categories);    ;
     }
 
     private String toString(InputStream is) throws IOException {
@@ -105,6 +114,10 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
         }
 
         return new String(baos.toByteArray());
+    }
+
+    public interface CategoryLoader{
+        void onResult(List<Category> categories);
     }
 
     //Metodo que converte Json para JAVA
@@ -139,4 +152,5 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
 
         return categories;
     }
+
 }
