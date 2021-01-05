@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,11 +20,13 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 
 import com.project.netflixremake.model.Movie;
+import com.project.netflixremake.model.MovieDetail;
+import com.project.netflixremake.util.MovieDetailTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity implements MovieDetailTask.MovieDetailLoader {
 
     private TextView txtTitle;
     private TextView txtDesc;
@@ -42,15 +46,15 @@ public class MovieActivity extends AppCompatActivity {
         Toolbar toobar = findViewById(R.id.tb_movie);
         setSupportActionBar(toobar);
 
-        if(getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        txtTitle.setText("BATMAN");
-        txtDesc.setText("Descricao");
+        //txtTitle.setText("BATMAN");
+        //txtDesc.setText("Descricao");
 
-        txtCast.setText(getString(R.string.cast     , "ator 1" + ",     ator 2"));
+        //txtCast.setText(getString(R.string.cast, "ator 1" + ",     ator 2"));
 
         List<Movie> listMovie = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
@@ -61,14 +65,27 @@ public class MovieActivity extends AppCompatActivity {
         rv_similar.setAdapter(new MovieAdapter());
         rv_similar.setLayoutManager(new GridLayoutManager(this, 3));
 
+        Bundle extras = getIntent().getExtras();
+
+        if(extras != null) {
+            int id = extras.getInt("id");
+            MovieDetailTask movieDetailTask = new MovieDetailTask(this);
+            movieDetailTask.MovieDetailLoader(this);
+            movieDetailTask.execute("https://tiagoaguiar.co/api/netflix/" + id);
+        }
+    }
+
+    @Override
+    public void onResult(MovieDetail movieDetail) {
+        txtTitle.setText(movieDetail.getMovie().getTitle());
+        txtDesc.setText(movieDetail.getMovie().getDesc());
+        txtCast.setText(movieDetail.getMovie().getCast());
     }
 
 
     private class MovieAdapter extends RecyclerView.Adapter<MovieViewHolder> {
 
-//        private final List<Movie> movies;
-
-
+        //        private final List<Movie> movies;
         @NonNull
         @Override
         public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

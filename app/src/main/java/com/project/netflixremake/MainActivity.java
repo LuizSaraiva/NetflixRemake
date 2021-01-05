@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +40,10 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
         rv_main.setLayoutManager(lm_main);
         rv_main.setAdapter(mainAdapter);
 
-
         //Recuperar dados JSON
         CategoryTask categoryTask = new CategoryTask(this);
         categoryTask.setCategoryLoader(this);
         categoryTask.execute("https://tiagoaguiar.co/api/netflix/home");
-
     }
 
     @Override
@@ -74,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
             holder.txViewTitle.setText(category.getName());
             holder.rv_category.setAdapter(new MovieAdapter(category.getMovie()));
             holder.rv_category.setLayoutManager(new LinearLayoutManager(getBaseContext(), RecyclerView.HORIZONTAL, false));
+
         }
 
         @Override
@@ -82,8 +82,6 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
         }
 
         public void setCategory(List<Category> categories) {
-//            this.ListCategories.clear();
-//            this.ListCategories.addAll(categories);
             this.ListCategories = categories;
         }
     }
@@ -103,18 +101,19 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
     }
 
 
-    private class MovieAdapter extends RecyclerView.Adapter<MovieViewHolder> {
+    private class MovieAdapter extends RecyclerView.Adapter<MovieViewHolder> implements onItemClickListener {
 
         private final List<Movie> movies;
 
-        MovieAdapter(List<Movie> movie) {
+        MovieAdapter(List<Movie> movie ) {
             this.movies = movie;
         }
 
         @NonNull
         @Override
         public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new MovieViewHolder(getLayoutInflater().inflate(R.layout.movie_item, parent, false));
+            View view = getLayoutInflater().inflate(R.layout.movie_item, parent, false);
+            return new MovieViewHolder(view,this);
         }
 
         @Override
@@ -127,18 +126,33 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
         public int getItemCount() {
             return movies.size();
         }
+
+        @Override
+        public void onClick(int position) {
+            Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+            intent.putExtra("id", movies.get(position).getId());
+            startActivity(intent);
+        }
     }
 
     private static class MovieViewHolder extends RecyclerView.ViewHolder {
 
         ImageView img_movie;
 
-        public MovieViewHolder(@NonNull View itemView) {
+        public MovieViewHolder(@NonNull View itemView, onItemClickListener onItemClickListener) {
             super(itemView);
-
             img_movie = itemView.findViewById(R.id.img_item);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onClick(getAdapterPosition());
+                }
+            });
         }
     }
 
+    interface onItemClickListener{
+        void onClick(int position);
+    }
 
 }

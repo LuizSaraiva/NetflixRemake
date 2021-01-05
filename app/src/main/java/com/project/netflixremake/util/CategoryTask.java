@@ -84,6 +84,7 @@ public class CategoryTask extends AsyncTask<String, Void, List<Category>> {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+            e.getMessage();
         }
 
         return null;
@@ -137,9 +138,11 @@ public class CategoryTask extends AsyncTask<String, Void, List<Category>> {
 
                 JSONObject movie = moviesArray.getJSONObject(j);
                 String coverUrl = movie.getString("cover_url");
+                int id = movie.getInt("id");
 
                 Movie movieObj = new Movie();
                 movieObj.setCoverUrl(coverUrl);
+                movieObj.setId(id);
 
                 movies.add(movieObj);
             }
